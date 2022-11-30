@@ -1,6 +1,5 @@
 package org.algorithms;
 
-import org.algorithms.exceptions.FullSizeException;
 import org.algorithms.exceptions.IndexValidException;
 import org.algorithms.exceptions.NullValueException;
 
@@ -8,7 +7,7 @@ import java.util.Arrays;
 
 public class IntegerListImplements implements IntegerList {
 
-    private final int[] ints;
+    private int[] ints;
     private int size;
 
     public IntegerListImplements() {
@@ -22,7 +21,7 @@ public class IntegerListImplements implements IntegerList {
     @Override
     public Integer add(int item) {
         validValue(item);
-        validSize();
+        grow();
         ints[size++] = item;
         return item;
     }
@@ -30,7 +29,7 @@ public class IntegerListImplements implements IntegerList {
     @Override
     public Integer add(int index, int item) {
         validValue(item);
-        validSize();
+        grow();
         validIndex(index);
         if (index == size) {
             ints[size++] = item;
@@ -73,20 +72,34 @@ public class IntegerListImplements implements IntegerList {
         arr[indexB] = tmp;
     }
 
-    private void sortSelection(int[] arr) {
-        for (int i = 0; i < arr.length - 1; i++) {
-            int minElementIndex = i;
-            for (int j = i + 1; j < arr.length; j++) {
-                if (arr[j] < arr[minElementIndex]) {
-                    minElementIndex = j;
-                }
-            }
-            swapElements(arr, i, minElementIndex);
+    private void quickSort(int[] arr, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(arr, begin, end);
+
+            quickSort(arr, begin, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, end);
         }
     }
+
+    private int partition(int[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+
+        for (int j = begin; j < end; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+
+                swapElements(arr, i, j);
+            }
+        }
+
+        swapElements(arr, i + 1, end);
+        return i + 1;
+    }
+
     @Override
     public boolean contains(int element) {
-        sortSelection(ints);
+        quickSort(ints, 0, ints.length - 1);
         int min = 0;
         int max = ints.length - 1;
 
@@ -171,9 +184,9 @@ public class IntegerListImplements implements IntegerList {
         }
     }
 
-    private void validSize() {
+    private void grow() {
         if (this.size == ints.length) {
-            throw new FullSizeException("Массив переполнен");
+            ints = Arrays.copyOf(ints, ints.length + ints.length / 2);
         }
     }
 }
