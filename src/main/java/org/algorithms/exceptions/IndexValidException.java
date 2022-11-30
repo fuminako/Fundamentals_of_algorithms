@@ -1,7 +1,7 @@
 package org.algorithms.exceptions;
 
 public class IndexValidException extends RuntimeException {
-    public IndexValidException(String massage){
-        super(massage);
+    public IndexValidException(String message) {
+        super(message);
     }
 }
